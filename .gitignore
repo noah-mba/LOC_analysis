@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# CRITICAL: Ignore Data Folders
+# This keeps the folder structure but ignores the files inside
+data/raw/
+data/derivatives/
+
+# Optional: Ignore large result files if necessary
+# results/
