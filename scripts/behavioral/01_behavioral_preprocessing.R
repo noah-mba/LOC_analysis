@@ -75,82 +75,51 @@ message("✅ Encoding data processed and saved.")
 # =========================================================================
 
 # A. Import & Select
-raw_dist <- read_psychopy("loc_label-distractor", "*.csv")
+raw_distractor <- read_psychopy("loc_label-distractor", "*.csv")
 
-clean_dist <- raw_dist %>%
-  filter(!is.na(key_resp_dist.keys)) %>%
-  select(
-    subject = participant,
-    dist_resp = key_resp_dist.keys,
-    dist_rt   = key_resp_dist.rt,
-    correct_ans = corr_ans  # Assuming math task or similar
-  )
+dist_duration = sum(raw_distractor$rt)
+print(dist_duration)
 
-# B. Sanity Checks
-if(nrow(clean_dist) != N_TRIALS_DIST) {
-  warning(paste("Distractor Warning: Expected", N_TRIALS_DIST, "trials, found", nrow(clean_dist)))
-}
-
-# C. Save
-write_csv(clean_dist, file.path(save_dir, paste0(sub_id, "_distractor_clean.csv")))
-message("✅ Distractor data processed and saved.")
+# Why is it only 220 seconds?? And not 300!
 
 # =========================================================================
 # 3. RETRIEVAL PHASE (Import, Select, Check, Save)
 # =========================================================================
 
 # A. Import & Select
-raw_ret <- read_psychopy("loc_label-retrieval", "*.csv")
+raw_retrieval <- read_psychopy("loc_label-retrieval", "*.csv")
 
-clean_ret <- raw_ret %>%
-  filter(!is.na(key_resp_ret.keys)) %>%
+retrieval_df <- raw_retrieval %>%
+  filter(!is.na(comic_name))
+
+# Why are there only 64 trials? And all of them are OLD? 
+
+clean_retrieval <- retrieval_df %>%
   select(
-    subject = participant,
-    stim_id = image_file,      # Must match Encoding name!
-    ret_resp = key_resp_ret.keys,
-    ret_rt   = key_resp_ret.rt,
-    ret_condition = condition, 
-    correct_ans = corr_ans
+    thisN,
+    comic_name,
+    condition_id,
+    low_prediction,
+    high_prediction,
+    cue_file,
+    target_file,
+    OvsN,
+    target_sat,
+    story_rec_resp.corr,
+    afc_resp.corr,
+    trials.story_rec_resp.corr,
+    trials.thisIndex,
+    thisRow.t,
   )
 
-# B. Sanity Checks
-if(nrow(clean_ret) != N_TRIALS_RET) {
-  stop(paste("Retrieval Error: Expected", N_TRIALS_RET, "trials, found", nrow(clean_ret)))
-}
+acc_story_rec <- mean(clean_retrieval$story_rec_resp.corr) #Is this the first question? Seen before?
+acc_afc <- mean(clean_retrieval$afc_resp.corr)
+# No variable for the 'Did something unexpected' response collected
 
-# Check for undefined keys
-if(any(!clean_ret$ret_resp %in% KEYS_ALLOWED)) {
-  warning("Retrieval Warning: Unexpected key presses detected.")
+sum(clean_retrieval$story_rec_resp.corr)
 }
 
 # C. Save
 write_csv(clean_ret, file.path(save_dir, paste0(sub_id, "_ret_clean.csv")))
 message("✅ Retrieval data processed and saved.")
 
-# =========================================================================
-# 4. MERGE PHASES
-# =========================================================================
-
-# A. Merge
-# specific columns from encoding we want to carry over to retrieval
-enc_to_merge <- clean_enc %>%
-  select(subject, stim_id, enc_resp, enc_rt, enc_condition = condition)
-
-merged_data <- clean_ret %>%
-  left_join(enc_to_merge, by = c("subject", "stim_id"))
-
-# B. Merge Logic Check
-# Did we lose data? or gain rows?
-if(nrow(merged_data) != nrow(clean_ret)) {
-  stop("Merge Error: Row count changed after merge! Check Stimulus IDs.")
-}
-
-# Check if condition labels match (optional but recommended)
-mismatches <- merged_data %>% filter(ret_condition != enc_condition)
-if(nrow(mismatches) > 0) {
-  warning("Merge Warning: Condition labels differ between phases for some items.")
-}
-
-# C. Save Final
-write_csv(merged_data, file.path(save_dir, paste0(sub_id, "_all_phases_merged.csv")))
-message("✅ MERGE COMPLETE. File saved.")
