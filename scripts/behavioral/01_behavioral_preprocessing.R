@@ -3,6 +3,9 @@
 # Purpose: Import raw PsychoPy data, clean columns, run QC, and save formatted files.
 # -------------------------------------------------------------------------
 
+
+setwd("C:/Users/noahm/projects/loc_analysis")
+
 # Check if tidyverse is installed; if not, install it
 if (!"tidyverse" %in% installed.packages()) {
   message("Installing tidyverse...")
@@ -11,21 +14,21 @@ if (!"tidyverse" %in% installed.packages()) {
 
 library(tidyverse)
 
+
 # =========================================================================
 # 0. SETUP
 # =========================================================================
 
-sub_id   <- "pilot_01" 
+sub_id   <- "pilot_02" 
 base_dir <- "data/raw"
 save_dir <- "data/derivatives/behavioral"
 
 # Create output folder if missing
 if(!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 
-# QC Constants (Update these based on your design!)
+# QC Constants 
 N_TRIALS_ENC  <- 64
-N_TRIALS_RET  <- 64
-#N_TRIALS_DIST <- 64 # Example number
+N_TRIALS_RET  <- 84
 KEYS_ALLOWED  <- c("1", "2", "3", "4", "left", "right", "space")
 
 # Helper function to read the correct file
@@ -43,32 +46,35 @@ read_psychopy <- function(sub_folder, pattern_string) {
 # A. Import & Select
 raw_enc <- read_psychopy("loc_label-encoding", "*.csv")
 
-# Variables schema, relationship, object, context, pair, spec_obj, violation 
-# differently encoded or missing for the normal trials vs. practice trials
+# The data set has 68 rows.. why?
+sum(!is.na(raw_enc$practice_trials.target_resp.keys))
+# There seems to be only 1 practice trial saved
 
+sum(!is.na(raw_enc$target_resp.keys))
+# It seems that 64 trials were saved, good!
 
 raw_encoding_trials <- raw_enc %>%
-  filter(!is.na(cue_file))
+  filter(!is.na(target_resp.keys))
 
-raw_encoding_trials$practice <- ifelse(
-  is.na(raw_encoding_trials$list_id),  # Test: Is 'list_id' NA?
-  1,                                  # Yes (TRUE): Assign 1
-  0                                   # No (FALSE): Assign 0
-)
+raw_encoding_trials  %>%
+  filter(question_type %in% c("color", "action")) %>%
+  group_by(question_type) %>%
+  summarise(
+    mean_corr = mean(trials.target_resp.corr, na.rm = TRUE),
+    n = n()
+  )
 
+raw_encoding_trials  %>%
+  filter(question_type %in% c("color", "action")) %>%
+  group_by(question_type) %>%
+  summarise(
+    mean_corr = mean(target_resp.rt, na.rm = TRUE),
+    n = n()
+  )
 
-
-# B. Sanity Checks
-if(nrow(clean_enc) != N_TRIALS_ENC) {
-  stop(paste("Encoding Error: Expected", N_TRIALS_ENC, "trials, found", nrow(clean_enc)))
-}
-if(any(duplicated(clean_enc$stim_id))) {
-  stop("Encoding Error: Duplicate stimulus IDs found.")
-}
-
-# C. Save
-write_csv(clean_enc, file.path(save_dir, paste0(sub_id, "_enc_clean.csv")))
-message("✅ Encoding data processed and saved.")
+# Participant has 100% accuracy for both types of encoding question
+# Mean RT for action: 1.41s, for color: 1.42s
+# Where do we ask for and save participants' age & gender?
 
 # =========================================================================
 # 2. DISTRACTOR PHASE (Import, Select, Check, Save)
@@ -92,7 +98,11 @@ raw_retrieval <- read_psychopy("loc_label-retrieval", "*.csv")
 retrieval_df <- raw_retrieval %>%
   filter(!is.na(comic_name))
 
+mean(retrieval_df$trials.cue_rec_resp.corr) #average accuracy of 75%
+mean(retrieval_df$trials.afc_resp.corr) #average accuracy of 14%
+
 # Why are there only 64 trials? And all of them are OLD? 
+# Missing column for end_rec_resp.corr
 
 clean_retrieval <- retrieval_df %>%
   select(
@@ -117,7 +127,7 @@ acc_afc <- mean(clean_retrieval$afc_resp.corr)
 # No variable for the 'Did something unexpected' response collected
 
 sum(clean_retrieval$story_rec_resp.corr)
-}
+
 
 # C. Save
 write_csv(clean_ret, file.path(save_dir, paste0(sub_id, "_ret_clean.csv")))
