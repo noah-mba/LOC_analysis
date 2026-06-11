@@ -13,6 +13,8 @@ data/raw/
 data/derivatives/
 
 # Optional: Ignore large result files if necessary
+code/
+
 # results/
 
 # Ignore archives

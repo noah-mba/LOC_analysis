@@ -1,0 +1,39 @@
+---
+title: "power_analysis"
+output: html_document
+---
+
+We use the WebPower library in R to run an a priori power analysis for a repeated measures Analysis of Variance (ANOVA) with two within-participants factors with two levels each, that are fully crossed:
+1. Action schema manipulation: schema-congruent, schema-incongruent
+2. Perceptual manipulation: perceptual-congruent, perceptual-incongruent. 
+
+Our goal is to obtain an 80% power to detect an effect of at least .25 (Cohen’s f), at the standard alpha level of .05. The result of the sample size estimation (n = __193.36__) was rounded to the next integer, resulting in a total n of __192__, resulting in an effective power of 79.7%.
+
+```{r}
+install.packages('WebPower')
+```
+
+
+```{r}
+library(WebPower)
+```
+```{r}
+
+
+# Power estimate for the omnibus F test
+wp.rmanova(n=NULL, ng=1, nm=4, f=0.25, power=0.8, nscor=1, type = 1)
+
+# Power estimate for main effects
+wp.rmanova(n=NULL, ng=1, nm=2, f=0.25, power=0.8, nscor=1, type = 1)
+
+
+```
+https://www.rdocumentation.org/packages/WebPower/versions/0.9.4/topics/wp.rmanova
+
+nscor = Nonsphericity correction coefficient. The nonsphericity correction coefficient is a measure of the degree of sphericity in the population. A coefficient of 1 means sphericity is met, while a coefficient less than 1 means not met. The samller value of the coefficient means the further departure from sphericity. The lowest value of the coefficient is 1/(nm-1) where nm is the total number of measurements. Two viable approaches for computing the empirical nonsphericity correction coefficient are sggested. One is by Greenhouse and Geisser (1959), the other is by Huynh and Feldt (1976).
+
+type = Type of analysis (0 or 1 or 2). The value "0" is for between-effect; "1" is for within-effect; and "2" is for interaction effect.
+
+
+
+
