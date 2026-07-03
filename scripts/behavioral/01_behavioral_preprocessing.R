@@ -19,9 +19,9 @@ library(tidyverse)
 # 0. SETUP
 # =========================================================================
 
-sub_id   <- "pilot_02" 
+sub_id   <- "s14" 
 base_dir <- "data/raw"
-save_dir <- "data/derivatives/behavioral"
+save_dir <- "data/derivatives/beh"
 
 # Create output folder if missing
 if(!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
@@ -53,24 +53,47 @@ sum(!is.na(raw_enc$practice_trials.target_resp.keys))
 sum(!is.na(raw_enc$target_resp.keys))
 # It seems that 64 trials were saved, good!
 
-raw_encoding_trials <- raw_enc %>%
-  filter(!is.na(target_resp.keys))
-
-raw_encoding_trials  %>%
-  filter(question_type %in% c("color", "action")) %>%
-  group_by(question_type) %>%
-  summarise(
-    mean_corr = mean(trials.target_resp.corr, na.rm = TRUE),
-    n = n()
+enc_df <- raw_enc %>%
+  rename(trial_n = trials.thisTrialN) %>% 
+  mutate(trial_n = trial_n + 1) %>%
+  filter(trial_n %in% c(1:64)) %>%
+  relocate(trial_n) %>%
+  select(
+    trial_n,
+    question_type,
+    corr_ans_side,
+    corr_label,
+    target_resp.keys,
+    target_resp.corr,
+    target_resp.rt,
+    condition_id,
+    low_prediction,
+    high_prediction,
+    thisRow.t,
+    fixcross_display.started,
+    fixcross_display.stopped,
+    cue_trial.started,
+    cue_trial.stopped,
+    action1_trial.started,
+    action1_trial.stopped, 
+    action2_trial.started,
+    action2_trial.stopped, 
+    action3_trial.started,
+    action3_trial.stopped, 
+    target_trial.stopped,
+    target_trial.started,
+    response.started,
+    response.stopped,
+    trials.target_resp.keys,
+    trials.target_resp.corr,
+    participant,
+    date,
+    expName
   )
+    
+    
+write_csv(enc_df, file.path(save_dir, paste0(sub_id, "_enc_clean.csv")))
 
-raw_encoding_trials  %>%
-  filter(question_type %in% c("color", "action")) %>%
-  group_by(question_type) %>%
-  summarise(
-    mean_corr = mean(target_resp.rt, na.rm = TRUE),
-    n = n()
-  )
 
 # Participant has 100% accuracy for both types of encoding question
 # Mean RT for action: 1.41s, for color: 1.42s
@@ -95,32 +118,55 @@ print(dist_duration)
 # A. Import & Select
 raw_retrieval <- read_psychopy("loc_label-retrieval", "*.csv")
 
-retrieval_df <- raw_retrieval %>%
-  filter(!is.na(comic_name))
-
-mean(retrieval_df$trials.cue_rec_resp.corr) #average accuracy of 75%
-mean(retrieval_df$trials.afc_resp.corr) #average accuracy of 14%
-
-# Why are there only 64 trials? And all of them are OLD? 
-# Missing column for end_rec_resp.corr
-
-clean_retrieval <- retrieval_df %>%
+ret_df <- raw_retrieval %>%
+  rename(trial_n = trials.thisTrialN) %>% 
+  mutate(trial_n = trial_n + 1) %>%
+  filter(trial_n %in% c(1:84)) %>%
+  relocate(trial_n) %>%
   select(
-    thisN,
+    trial_n,
     comic_name,
     condition_id,
     low_prediction,
     high_prediction,
+    direction,
     cue_file,
     target_file,
+    ending_corr_label,
     OvsN,
+    OvsN_code,
     target_sat,
-    story_rec_resp.corr,
+    cue_rec_resp.corr,
+    cue_rec_resp.rt,
+    ending_rec_resp.corr,
+    ending_rec_resp.rt,
     afc_resp.corr,
-    trials.story_rec_resp.corr,
-    trials.thisIndex,
+    afc_resp.rt,
     thisRow.t,
+    fixcross_display.started,
+    fixcross_display.stopped,
+    cue_display.started,
+    cue_display.stopped,
+    cue_recog.started,
+    story_rec_prompt.started,
+    cue_recog.stopped,
+    trials.cue_rec_resp.corr,
+    trials.cue_rec_resp.rt,
+    ending_recall.started,
+    ending_rec_prompt.started,
+    ending_recall.stopped,
+    trials.ending_rec_resp.corr,
+    trials.ending_rec_resp.rt,
+    target_trial.started,
+    trials.afc_resp.corr,
+    trials.afc_resp.rt,
+    fix2.started,
+    fix2.stopped,
+    participant
   )
+    
+
+
 
 acc_story_rec <- mean(clean_retrieval$story_rec_resp.corr) #Is this the first question? Seen before?
 acc_afc <- mean(clean_retrieval$afc_resp.corr)
@@ -130,6 +176,6 @@ sum(clean_retrieval$story_rec_resp.corr)
 
 
 # C. Save
-write_csv(clean_ret, file.path(save_dir, paste0(sub_id, "_ret_clean.csv")))
+write_csv(ret_df, file.path(save_dir, paste0(sub_id, "_ret_clean.csv")))
 message("✅ Retrieval data processed and saved.")
 
