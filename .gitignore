@@ -11,6 +11,7 @@ __pycache__/
 # This keeps the folder structure but ignores the files inside
 data/raw/
 data/derivatives/
+data/bids
 
 # Optional: Ignore large result files if necessary
 code/
