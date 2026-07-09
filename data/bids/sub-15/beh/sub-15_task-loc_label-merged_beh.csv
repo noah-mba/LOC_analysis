@@ -1,0 +1,6 @@
+participant_id,cue_file,enc_trial_count,enc_condition_id,enc_low_prediction,enc_high_prediction,enc_direction,enc_scn_type,enc_target_file,enc_target_sat,enc_acc,ret_trial_count,ret_trial_type,ret_trial_type_code,cue_recog_response,cue_recog_acc,outcome_response,outcome_memory_acc,afc_response_num,afc_response_story,afc_response_sat,afc_acc,afc_story_acc,afc_sat_acc
+15,stimuli/02-01_01_02_169_Slide-09.png,10.0,2.0,0.0,0.0,1,1,stimuli/02-01_01_02_169_Slide-14.png,0.0,1.0,3.0,old,1.0,old,1,yes,0.0,2.0,stimuli/02-01_01_02_169_Slide-16.png,1.0,0.0,0.0,0.0
+15,stimuli/01-01_01_02_48_Slide-01.png,21.0,1.0,0.0,0.0,0,1,stimuli/01-01_01_02_48_Slide-06.png,1.0,1.0,4.0,old,1.0,new,0,no,1.0,3.0,stimuli/01-01_01_02_48_Slide-08.png,1.0,0.0,0.0,1.0
+15,stimuli/02-02_01_02_253_Slide-09.png,38.0,2.0,0.0,0.0,1,1,stimuli/02-02_01_02_253_Slide-14.png,0.0,1.0,1.0,old,1.0,old,1,yes,0.0,2.0,stimuli/02-02_01_02_253_Slide-16.png,1.0,0.0,0.0,0.0
+15,stimuli/01-01_01_02_37_Slide-01.png,52.0,1.0,0.0,0.0,0,1,stimuli/01-01_01_02_37_Slide-06.png,1.0,1.0,2.0,old,1.0,new,0,no,1.0,3.0,stimuli/01-01_01_02_37_Slide-08.png,1.0,0.0,0.0,1.0
+15,stimuli/01-01_02_01_74_Slide-01.png,,,,,,,,,,5.0,new,0.0,,0,,,,,,,,

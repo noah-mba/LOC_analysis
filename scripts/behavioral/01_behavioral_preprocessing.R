@@ -19,9 +19,9 @@ library(tidyverse)
 # 0. SETUP
 # =========================================================================
 
-sub_id   <- "s14" 
+sub_id   <- "sub-14" 
 base_dir <- "data/raw"
-save_dir <- "data/derivatives/beh"
+save_dir <- "data/derivatives/sub-14/beh"
 
 # Create output folder if missing
 if(!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
@@ -92,7 +92,7 @@ enc_df <- raw_enc %>%
   )
     
     
-write_csv(enc_df, file.path(save_dir, paste0(sub_id, "_enc_clean.csv")))
+write_csv(enc_df, file.path(save_dir, paste0(sub_id, "_task-loc_beh_desc-enc.csv")))
 
 
 # Participant has 100% accuracy for both types of encoding question
@@ -176,6 +176,7 @@ sum(clean_retrieval$story_rec_resp.corr)
 
 
 # C. Save
-write_csv(ret_df, file.path(save_dir, paste0(sub_id, "_ret_clean.csv")))
+write_csv(ret_df, file.path(save_dir, paste0(sub_id, "_task-loc_beh_desc-ret.csv")))
 message("✅ Retrieval data processed and saved.")
 
+sub-14_task-loc_beh
