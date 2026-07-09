@@ -8,12 +8,15 @@
 # Adjusted for unified BIDS merged files
 # ==============================================================================
 
+# install.packages(jsonliste)
+library(jsonlite)
 library(dplyr)
 library(readr)
 library(fs)
 
+
 # --- 1. CONFIGURATION --- #
-bids_dir <- "/Volumes/Data/jortiz/levels_of_congruency/data/bids"
+bids_dir <- "C:/Users/noahm/projects/loc_analysis/data/bids"
 
 # Define subjects (skipping sub-15)
 sujetos_g1 <- sprintf("sub-%02d", 3:14)
@@ -77,7 +80,7 @@ resultados <- data.frame()
 
 for (sujeto in todos_los_sujetos) {
   
-  ruta_carpeta <- file.path(bids_dir, sujeto)
+  ruta_carpeta <- file.path(bids_dir, sujeto, "beh")
   if (!dir_exists(ruta_carpeta)) next
   
   # Find the unified CSV
@@ -146,6 +149,20 @@ cat("=========================================\n")
 
 excluidos <- resultados %>% filter(Decision == "EXCLUDE")
 
+ids_to_exclude <- sub("sub-", "", excluidos$Subject)
+ids_to_exclude
+
+exclusion_list <- list(
+  behavioral_exclusions = ids_to_exclude
+)
+
+write_json(
+  exclusion_list,
+  "../../data/derivatives/subject_exclusions.json",
+  pretty = TRUE,
+  auto_unbox = TRUE
+)
+
 if (nrow(excluidos) > 0) {
   for (i in 1:nrow(excluidos)) {
     cat(sprintf("-> %s | Enc: %s (%.1f%%) | Ret: %s (d'=%.2f)\n", 
@@ -156,3 +173,5 @@ if (nrow(excluidos) > 0) {
   cat("Great news! All subjects passed both encoding and retrieval criteria.\n")
 }
 
+
+save.csv
