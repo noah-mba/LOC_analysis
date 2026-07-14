@@ -1,0 +1,26 @@
+{
+  "included_subjects": [
+    17,
+    26
+  ],
+  "skipped_subjects": [
+    [
+      23,
+      "missing one or more conditions"
+    ]
+  ],
+  "n_permutations": 500,
+  "alpha": 0.05,
+  "H4": {
+    "n_clusters_total": 614,
+    "significant_clusters": []
+  },
+  "H5": {
+    "n_clusters_total": 695,
+    "significant_clusters": []
+  },
+  "H6": {
+    "n_clusters_total": 686,
+    "significant_clusters": []
+  }
+}
