@@ -1,38 +1,25 @@
-#Laura Cardós-Vicente, lauracardos@ugr.es#
-#26-05-2026#
-# This script uses BIDS behavioral data cleaning (Merged Encoding & Retrieval)
-#This script aims to clean the merged data by deleting the duplicates and practice trials#
+# Laura Cardós-Vicente, lauracardos@ugr.es
+# Adapted by Noah — flags (does not delete) rows affected by the retrieval-task
+# cue_file bug, so the CSV keeps its full 84 rows (64 encoding + 20 new) and stays
+# aligned with the actual EEG trigger count for epoching.
+
 library(dplyr)
 library(readr)
 library(stringr)
 library(fs)
 
-# ==============================================================================
-# 1. Path and group configuration
-# ==============================================================================
-# Adjust this path to where your BIDS folder is located
 bids_dir <- "C:/Users/noahm/projects/loc_analysis/data/bids"
 
-# Define subjects in BIDS format (sub-XX)
-# G1: sub-03 to sub-14
 sujetos_g1 <- sprintf("sub-%02d", 3:14)
-# G2: sub-16 to sub-44 (automatically skipping sub-15)
 sujetos_g2 <- sprintf("sub-%02d", 16:44)
-todos_los_sujetos <- c(sujetos_g1, sujetos_g2)
+# todos_los_sujetos <- c(sujetos_g1, sujetos_g2)
 
-# Forbidden stories lists. 
-# Note: Story 136 is already in Group 1, so it will be automatically removed.
-practice_g1 <- c(133, 136, 81, 19, 28, 32, 26, 156)
-practice_g2 <- c(133, 153, 81, 1, 28, 32, 26, 156)
+cat("\n=== STARTING QC FLAGGING IN BIDS ===\n")
 
-cat("\n=== STARTING DIRECT CLEANING IN BIDS ===\n")
+todos_los_sujetos <- c("sub-09", "sub-10", "sub-11", "sub-12")
 
-# ==============================================================================
-# 2. Main cleaning loop
-# ==============================================================================
 for (sujeto in todos_los_sujetos) {
   
-  # Build the path to the subject folder
   ruta_carpeta <- file.path(bids_dir, sujeto, "beh")
   
   if (!dir_exists(ruta_carpeta)) {
@@ -40,7 +27,6 @@ for (sujeto in todos_los_sujetos) {
     next
   }
   
-  # Search for CSV files inside the subject folder
   archivos_csv <- dir_ls(ruta_carpeta, regexp = "\\.csv$")
   
   if (length(archivos_csv) == 0) {
@@ -48,49 +34,36 @@ for (sujeto in todos_los_sujetos) {
     next
   }
   
-  # 3. Iterate through each CSV (typically only one unified file per subject)
   for (archivo in archivos_csv) {
     
-    # Read everything as plain text to prevent format alterations
     datos <- read_csv(archivo, col_types = cols(.default = "c"), show_col_types = FALSE)
     
-    if ("cue_file" %in% colnames(datos)) {
-      
-      filas_antes <- nrow(datos)
-      
-      # Assign the correct forbidden list based on the group
-      forbidden_list <- if (sujeto %in% sujetos_g1) practice_g1 else practice_g2
-      
-      # Step A: Extract the story number from 'cue_file'
-      # Look for digits that are exactly between a "_" and "_Slide"
-      patron <- "(?<=_)\\d+(?=_Slide)"
-      numeros <- as.numeric(str_extract(datos$cue_file, patron))
-      
-      # Step B: Create deletion masks
-      # 1. It is a practice story (or story 136 for G1)
-      es_practica <- !is.na(numeros) & (numeros %in% forbidden_list)
-      
-      # 2. It is a duplicate (marks TRUE starting from the second occurrence)
-      es_duplicado <- !is.na(numeros) & duplicated(numeros)
-      
-      # Step C: Apply the filter
-      # Keep only what is NOT a practice story and NOT a duplicate
-      filas_a_mantener <- !es_practica & !es_duplicado
-      datos_limpios <- datos[filas_a_mantener, ]
-      
-      # Step D: Overwrite the original file
-      # Use na = "" to keep missing values completely blank (as in your previous step)
-      write_csv(datos_limpios, archivo, na = "")
-      
-      # Print detailed report
-      filas_borradas <- filas_antes - nrow(datos_limpios)
-      cat(sprintf("[OK] %s | %s -> Overwritten. %d trials removed.\n", 
-                  sujeto, basename(archivo), filas_borradas))
-      
-    } else {
+    if (!("cue_file" %in% colnames(datos))) {
       warning(sprintf("File %s does not have a column named 'cue_file'.", basename(archivo)))
+      next
     }
+    
+    # A cue_file that appears more than once means the same stimulus was
+    # presented twice at retrieval (the early retrieval-task bug). We don't
+    # guess which copy is "real" by label — we trust enc_trial_count, which
+    # comes from the corrected Python merge and only exists on the copy that
+    # genuinely matched an encoding trial. The copy WITHOUT a match is the
+    # untrustworthy one and gets flagged.
+    cue_dup <- duplicated(datos$cue_file) | duplicated(datos$cue_file, fromLast = TRUE) # cue_dup marks every row that shares its cue_file with at least one other row
+    sin_match_encoding <- is.na(datos$enc_trial_count) # TRUE if a row has no tie to an encoding trial (foil retrieval trials!)
+    
+    bad_trial <- cue_dup & sin_match_encoding # only flags those rows where the cue_file is duplicated somewhere in the data
+    # and it's the copy that didn't get a real encoding match
+    
+    datos$bad_trial <- bad_trial
+    datos$bad_trial_reason <- ifelse(bad_trial, "duplicate_cue_no_encoding_match", NA_character_)
+    
+    n_flagged <- sum(bad_trial)
+    write_csv(datos, archivo, na = "")
+    
+    cat(sprintf("[OK] %s | %s -> %d/%d rows flagged bad_trial (all rows kept).\n",
+                sujeto, basename(archivo), n_flagged, nrow(datos)))
   }
 }
 
-cat("\n=== BIDS CLEANING PROCESS COMPLETED ===\n")
+cat("\n=== BIDS QC FLAGGING COMPLETED ===\n")

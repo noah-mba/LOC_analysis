@@ -15,7 +15,8 @@ OUTPUT_ROOT = Path('C:/Users/noahm/projects/loc_analysis/data/bids')
 
 
 # Python ranges exclude the stop value; this processes 3..22 inclusive.
-PARTICIPANTS = range(2, 45)
+# PARTICIPANTS = range(2, 45)
+PARTICIPANTS = [9, 10, 11, 12]
 
 
 # Decide what "¿Ocurrió algo inesperado?" meant in your task.
@@ -146,7 +147,29 @@ for participant in PARTICIPANTS:
         enc_unique['enc_trial_count'] = enc_unique['enc_trial_count'] + 1
         ret_data['ret_trial_count'] = ret_data['ret_trial_count'] + 1
 
-        merged = ret_data.merge(enc_unique, on='cue_file', how='left', indicator='encoding_match')
+        # -------------------------
+        # Merge encoding and retrieval
+        # -------------------------
+        # IMPORTANT: only OvsN == 'old' rows are allowed to match against encoding.
+        # A retrieval-task bug can duplicate a cue_file across an 'old' row and an
+        # unrelated 'new' row; merging on cue_file alone would wrongly attach
+        # encoding data to that 'new' row too. Splitting first guarantees each of
+        # the 64 encoding trials maps to exactly one retrieval row.
+        old_mask_ret = ovsn.eq('old') # Boolean mask that is TRUE for studied trials, FALSE for foil trials
+        # Splitting ret_data into two separate DataFrames
+        ret_old = ret_data[old_mask_ret].copy() # 64 old rows
+        ret_new = ret_data[~old_mask_ret].copy() # 20 new rows
+
+        merged_old = ret_old.merge(enc_unique, on='cue_file', how='left', indicator='encoding_match') # We merge ONLY the old rows based on cue_file
+        merged_new = ret_new.copy()
+
+        # The encoding-derived colums for ret_new just get filled with NaN, so they can be stacked with ret_old later
+        for c in enc_unique.columns:
+            if c != 'cue_file':
+                merged_new[c] = np.nan
+        merged_new['encoding_match'] = 'new_trial'
+
+        merged = pd.concat([merged_old, merged_new], ignore_index=True)
         merged['encoding_match'] = merged['encoding_match'].astype(str)
 
         old_mask = clean_key(merged['OvsN']) == 'old'
