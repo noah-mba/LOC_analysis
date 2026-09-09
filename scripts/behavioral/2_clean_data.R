@@ -16,7 +16,7 @@ sujetos_g2 <- sprintf("sub-%02d", 16:44)
 
 cat("\n=== STARTING QC FLAGGING IN BIDS ===\n")
 
-todos_los_sujetos <- c("sub-09", "sub-10", "sub-11", "sub-12")
+todos_los_sujetos <- c("sub-09", "sub-10", "sub-11", "sub-12") # I ran the updated script for the subjects who passed behavioral inclusion,  but had the retrieval bug
 
 for (sujeto in todos_los_sujetos) {
   

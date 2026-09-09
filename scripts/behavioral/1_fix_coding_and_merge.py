@@ -16,7 +16,7 @@ OUTPUT_ROOT = Path('C:/Users/noahm/projects/loc_analysis/data/bids')
 
 # Python ranges exclude the stop value; this processes 3..22 inclusive.
 # PARTICIPANTS = range(2, 45)
-PARTICIPANTS = [9, 10, 11, 12]
+PARTICIPANTS = [9, 10, 11, 12] # I ran the updated script for the subjects who passed behavioral inclusion,  but had the retrieval bug
 
 
 # Decide what "¿Ocurrió algo inesperado?" meant in your task.
