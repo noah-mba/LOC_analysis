@@ -1,60 +1,67 @@
 {
   "included_subjects": [
-    12,
-    17,
-    20,
-    21,
-    22,
-    23,
-    26,
-    27,
-    30,
-    32,
-    33,
-    35,
-    36,
-    37,
-    38,
-    41,
-    42,
-    43,
-    44
+    "09",
+    "10",
+    "11",
+    "12",
+    "17",
+    "20",
+    "21",
+    "22",
+    "23",
+    "26",
+    "27",
+    "30",
+    "32",
+    "33",
+    "35",
+    "36",
+    "37",
+    "38",
+    "41",
+    "42",
+    "43",
+    "44"
   ],
   "skipped_subjects": [],
   "n_permutations": 500,
   "alpha": 0.05,
   "H4": {
-    "n_clusters_total": 78,
+    "n_clusters_total": 79,
     "significant_clusters": [
       {
-        "cluster_index": 30,
-        "p_value": 0.004
+        "cluster_index": 37,
+        "p_value": 0.008
       },
       {
-        "cluster_index": 62,
-        "p_value": 0.018
+        "cluster_index": 70,
+        "p_value": 0.008
       }
     ]
   },
   "H5": {
-    "n_clusters_total": 114,
+    "n_clusters_total": 116,
     "significant_clusters": []
   },
   "H6": {
-    "n_clusters_total": 100,
+    "n_clusters_total": 73,
     "significant_clusters": [
       {
-        "cluster_index": 89,
-        "p_value": 0.03
+        "cluster_index": 33,
+        "p_value": 0.048
+      },
+      {
+        "cluster_index": 68,
+        "p_value": 0.022
       }
     ]
   },
   "baseline_QC_H4": {
-    "n_clusters_total": 42,
+    "n_clusters_total": 45,
     "significant_clusters": []
   },
   "baseline_QC_H5": {
-    "n_clusters_total": 42,
+    "n_clusters_total": 45,
     "significant_clusters": []
   }
 }
