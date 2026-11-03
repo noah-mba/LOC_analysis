@@ -1,0 +1,24 @@
+https://osf.io/h3qkx/overview
+
+Research questions or hypotheses
+Part 1: Hypotheses adopted from the parent LOC project 
+
+Behavioral hypotheses 
+H1 (main effect): If schematic incongruence enhances encoding of unexpected information, then memory performance will be better for schematically incongruent than for schematically congruent trials. 
+H2 (main effect): If perceptual incongruence enhances encoding of unexpected information, then memory performance will be better for perceptually incongruent than for perceptually congruent trials.
+
+Event-related potentials EEG hypotheses 
+H3 (main effect): If schematic incongruence elicits neural responses to expectancy violations, then the difference wave across trials (schematically incongruent minus schematically congruent trials) will show temporal-spatial clusters with significant deviations from zero when tested with a permutation test. 
+H4 (main effect): If perceptual incongruence elicits expectancy violations, then the difference wave across trials (perceptually incongruent minus perceptually congruent) will show temporal-spatial clusters with significant deviations from zero when tested with a permutation test.
+
+
+Part 2: Thesis-specific hypotheses
+
+Multivariate EEG hypotheses: Encoding-Retrieval Similarity (ERS)
+H5 (Item-specific ERS): If presenting a static retrieval cue triggers neural replay of the encoded episode, then EEG activity patterns during successful retrieval will show a significantly higher correlation (item-specific ERS) to the sequential encoding stages of that specific narrative than to non-matching control narratives.
+
+H6 (Schematic modulation of ERS): If schematic prediction errors enhance the neural representation of an episode, then the strength of the item-specific ERS will be significantly greater for schematically incongruent compared to schematically congruent narratives.
+
+H7 (Perceptual modulation of ERS): If perceptual prediction errors enhance the neural representation of an episode, then the strength of the item-specific ERS will be significantly greater for perceptually incongruent compared to perceptually congruent narratives.
+
+Note to self: continue with ERS slides
