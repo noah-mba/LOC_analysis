@@ -24,44 +24,58 @@
     "44"
   ],
   "skipped_subjects": [],
-  "n_permutations": 500,
+  "n_permutations": 1000,
   "alpha": 0.05,
   "H4": {
-    "n_clusters_total": 79,
+    "n_clusters_total": 80,
     "significant_clusters": [
       {
-        "cluster_index": 37,
-        "p_value": 0.008
+        "cluster_index": 35,
+        "p_value": 0.006
       },
       {
-        "cluster_index": 70,
+        "cluster_index": 68,
         "p_value": 0.008
       }
     ]
   },
   "H5": {
-    "n_clusters_total": 116,
+    "n_clusters_total": 115,
     "significant_clusters": []
   },
-  "H6": {
-    "n_clusters_total": 73,
+  "H4.I1": {
+    "n_clusters_total": 71,
     "significant_clusters": [
       {
-        "cluster_index": 33,
-        "p_value": 0.048
-      },
+        "cluster_index": 30,
+        "p_value": 0.029
+      }
+    ]
+  },
+  "H4.I2": {
+    "n_clusters_total": 93,
+    "significant_clusters": [
       {
-        "cluster_index": 68,
+        "cluster_index": 28,
+        "p_value": 0.007
+      }
+    ]
+  },
+  "H4.I3": {
+    "n_clusters_total": 90,
+    "significant_clusters": [
+      {
+        "cluster_index": 78,
         "p_value": 0.022
       }
     ]
   },
   "baseline_QC_H4": {
-    "n_clusters_total": 45,
+    "n_clusters_total": 43,
     "significant_clusters": []
   },
   "baseline_QC_H5": {
-    "n_clusters_total": 45,
+    "n_clusters_total": 43,
     "significant_clusters": []
   }
 }
