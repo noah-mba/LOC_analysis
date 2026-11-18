@@ -9,9 +9,10 @@ __pycache__/
 
 # CRITICAL: Ignore Data Folders
 # This keeps the folder structure but ignores the files inside
+data/
 data/raw/
 data/derivatives/
-data/bids
+data/bids/
 
 # Optional: Ignore large result files if necessary
 code/
@@ -20,3 +21,6 @@ code/
 
 # Ignore archives
 scripts/eeg/archive
+scripts/behavioral/archive
+
+_misc/
